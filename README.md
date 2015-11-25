@@ -4,6 +4,7 @@ This class can get you a common color from the image by url.
 But be careful of ussing this as there are Cross Origin policy which may block some images from different domains.
 
 Before using don't forget to run `bower install` to install one dependency.
+Live Demo: http://preview.16mb.com/color-finder/
 
 ## Usage
 
