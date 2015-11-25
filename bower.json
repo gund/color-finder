@@ -1,0 +1,16 @@
+{
+  "name": "color-finder",
+  "main": "src/color-finder.js",
+  "authors": [
+    "Alex Malkevich <malkevich.alex@gmail.com>"
+  ],
+  "description": "",
+  "moduleType": [
+    "globals"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "dependencies": {
+    "color-thief": "~2.0.1"
+  }
+}
