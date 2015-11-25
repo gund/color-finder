@@ -6,6 +6,14 @@ But be careful of ussing this as there are Cross Origin policy which may block s
 Before using don't forget to run `bower install` to install one dependency.  
 Live Demo: http://preview.16mb.com/color-finder/
 
+## Installation
+
+**Using bower:**
+
+`bower install color-finder --save`
+
+or just download latest release from Github.
+
 ## Usage
 
 `ColorFinder.fromImage('http://....jpg', function(color) {...})`
