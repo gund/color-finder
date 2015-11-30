@@ -52,4 +52,36 @@ describe('ColorFinder Class', function () {
 
     });
 
+    describe('Test _normalizeColor method', function () {
+
+        it('should throw error if invalid color', function () {
+            expect(function () {
+                ColorFinder._normalizeColor();
+            }).toThrow(new Error('ColorFinder: normalizeColor: Invalid color'));
+
+            expect(function () {
+                ColorFinder._normalizeColor('#ff0000');
+            }).toThrow(new Error('ColorFinder: normalizeColor: Invalid color'));
+
+            expect(function () {
+                ColorFinder._normalizeColor([255, 0]);
+            }).toThrow(new Error('ColorFinder: normalizeColor: Invalid color'));
+        });
+
+        it('should throw error if no max color', function () {
+            expect(function () {
+                ColorFinder._normalizeColor([255, 0, 150]);
+            }).toThrow(new Error('ColorFinder: normalizeColor: Invalid maxColor'));
+        });
+
+        it('should return same color if in allowed range', function () {
+            expect(ColorFinder._normalizeColor([255, 0, 150], 255)).toEqual([255, 0, 150]);
+        });
+
+        it('should return normalized color to be in allowed range', function () {
+            expect(ColorFinder._normalizeColor([255, 0, 150], 240)).toEqual([240, 0, 135]);
+        });
+
+    });
+
 });
