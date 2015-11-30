@@ -24,7 +24,7 @@ describe('ColorFinder Class', function () {
         it('should throw error if config key unknown', function () {
             expect(function () {
                 ColorFinder.setConfig('customConfig', 'OK?');
-            }).toThrow(new Error('ColorFinder: setConfig: Invalid config key'));
+            }).toThrow(Error('ColorFinder: setConfig: Invalid config key'));
         });
 
     });
@@ -34,13 +34,13 @@ describe('ColorFinder Class', function () {
         it('should throw error if no image url', function () {
             expect(function () {
                 ColorFinder.fromImage();
-            }).toThrow(new Error('ColorFinder: fromImage: Invalid image url'));
+            }).toThrow(Error('ColorFinder: fromImage: Invalid image url'));
         });
 
         it('should throw error if no callback', function () {
             expect(function () {
                 ColorFinder.fromImage(DEMO_IMAGE);
-            }).toThrow(new Error('ColorFinder: fromImage: Invalid callback'));
+            }).toThrow(Error('ColorFinder: fromImage: Invalid callback'));
         });
 
         it('should proceed and call function with color', function (done) {
@@ -57,21 +57,21 @@ describe('ColorFinder Class', function () {
         it('should throw error if invalid color', function () {
             expect(function () {
                 ColorFinder._normalizeColor();
-            }).toThrow(new Error('ColorFinder: normalizeColor: Invalid color'));
+            }).toThrow(Error('ColorFinder: normalizeColor: Invalid color'));
 
             expect(function () {
                 ColorFinder._normalizeColor('#ff0000');
-            }).toThrow(new Error('ColorFinder: normalizeColor: Invalid color'));
+            }).toThrow(Error('ColorFinder: normalizeColor: Invalid color'));
 
             expect(function () {
                 ColorFinder._normalizeColor([255, 0]);
-            }).toThrow(new Error('ColorFinder: normalizeColor: Invalid color'));
+            }).toThrow(Error('ColorFinder: normalizeColor: Invalid color'));
         });
 
         it('should throw error if no max color', function () {
             expect(function () {
                 ColorFinder._normalizeColor([255, 0, 150]);
-            }).toThrow(new Error('ColorFinder: normalizeColor: Invalid maxColor'));
+            }).toThrow(Error('ColorFinder: normalizeColor: Invalid maxColor'));
         });
 
         it('should return same color if in allowed range', function () {
