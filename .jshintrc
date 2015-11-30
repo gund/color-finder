@@ -19,15 +19,11 @@
 
   "predef"        : [  // Custom globals.
     "ColorThief"
-    //"anotherCoolGlobal",
-    //"iLoveDouglas"
   ],
-
 
   // Development.
   "debug"         : false,  // Allow debugger statements e.g. browser breakpoints.
   "devel"         : true,   // Allow developments statements e.g. `console.log();`.
-
 
   // ECMAScript 5.
 //  "es5"           : true,   // Allow ECMAScript 5 syntax.
@@ -56,7 +52,6 @@
   "shadow"        : false,  // Allows re-define variables later in code e.g. `var x=1; x=2;`.
   "supernew"      : false,  // Tolerate `new function () { ... };` and `new Object;`.
   "undef"         : true,   // Require all non-global variables be declared before they are used.
-
 
   // Personal styling preferences.
   "newcap"        : true,   // Require capitalization of all constructor functions e.g. `new F()`.
