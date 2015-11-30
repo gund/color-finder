@@ -620,20 +620,24 @@ var MMCQ = (function() {
         return Error('ColorFinder: ' + msg);
     };
 
-    var colorFinderConfig = {
-        maxColorValue: 230 // Maximum value for RGB complement
-    };
-
-    var ColorFinder = {};
+    /**
+     * ColorFinder Class
+     * @constructor
+     */
+    function ColorFinder() {
+        this.settings = Object.seal({
+            maxColorValue: 230 // Maximum value for RGB complement
+        });
+    }
 
     /**
      * Update config of ColorFinder
      * @param {String} key
      * @param {*} value
      */
-    ColorFinder.setConfig = function (key, value) {
-        if (colorFinderConfig[key] === undefined) throw colorFinderError('setConfig: Invalid config key');
-        colorFinderConfig[key] = value;
+    ColorFinder.prototype.setConfig = function (key, value) {
+        if (this.settings[key] === undefined) throw colorFinderError('setConfig: Invalid config key');
+        this.settings[key] = value;
     };
 
     /**
@@ -641,30 +645,31 @@ var MMCQ = (function() {
      * @param {String} imageUrl
      * @param {Function} callback
      */
-    ColorFinder.fromImage = function (imageUrl, callback) {
+    ColorFinder.prototype.fromImage = function (imageUrl, callback) {
         if (!imageUrl) throw colorFinderError('fromImage: Invalid image url');
         if (typeof callback !== 'function') throw colorFinderError('fromImage: Invalid callback');
 
-        getPopularColor(imageUrl, callback);
+        this._getPopularColor(imageUrl, callback);
     };
-
-    window.ColorFinder = ColorFinder; // Export
 
     /**
      * @param {String} imgUrl
      * @param {Function} callback
+     * @private
      */
-    function getPopularColor(imgUrl, callback) {
+    ColorFinder.prototype._getPopularColor = function (imgUrl, callback) {
         if (!imgUrl) return;
 
-        //_readBlobAsync(imgUrl, function (data) {
+        var me = this;
+
+        //this._readBlobAsync(imgUrl, function (data) {
         var img = new Image();//, blobUrl = (window.URL || window.webkitURL).createObjectURL(data);
         //var popularColor = [0, 0, 0];
 
         img.onload = function () {
-            //var imageData = _imageToContext(img).getImageData(0, 0, img.width, img.height);
+            //var imageData = this._imageToContext(img).getImageData(0, 0, img.width, img.height);
 
-            //var histogram = _buildHistogram(imageData.data, imageData.width * imageData.height);
+            //var histogram = this._buildHistogram(imageData.data, imageData.width * imageData.height);
             //var dominantR = histogram.r.indexOf(arrayMax(histogram.r));
             //var dominantG = histogram.g.indexOf(arrayMax(histogram.g));
             //var dominantB = histogram.b.indexOf(arrayMax(histogram.b));
@@ -673,20 +678,21 @@ var MMCQ = (function() {
             //popularColor = [dominantR, dominantG, dominantB];
             //handler(popularColor);
 
-            callback(normalizeColor(ColorThief.prototype.getColor(img), colorFinderConfig.maxColorValue));
+            callback(me._normalizeColor(ColorThief.prototype.getColor(img), me.settings.maxColorValue));
         };
 
         img.crossOrigin = ''; // Try to fix cross origin restriction
         img.src = imgUrl;//blobUrl;
         //});
-    }
+    };
 
     /**
      * @param {Array} color
      * @param {Number} maxColor
      * @returns {Array}
+     * @private
      */
-    function normalizeColor(color, maxColor) {
+    ColorFinder.prototype._normalizeColor = function (color, maxColor) {
         if (!(color instanceof Array) || color.length < 3) throw colorFinderError('normalizeColor: Invalid color');
         if (maxColor === undefined) throw colorFinderError('normalizeColor: Invalid maxColor');
 
@@ -698,7 +704,7 @@ var MMCQ = (function() {
         color[1] -= colorDelta;
         color[2] -= colorDelta;
         return color;
-    }
+    };
 
     /**
      * @param {CanvasPixelArray} pixels
@@ -706,7 +712,7 @@ var MMCQ = (function() {
      * @returns {{r: Array, g: Array, b: Array, a: Array}}
      * @private
      */
-    function _buildHistogram(pixels, totalPixels) {
+    ColorFinder.prototype._buildHistogram = function (pixels, totalPixels) {
         var histogram = {
             r: [],
             g: [],
@@ -728,14 +734,14 @@ var MMCQ = (function() {
         }
 
         return histogram;
-    }
+    };
 
     /**
      * @param {String} url
      * @param {Function} handler
      * @private
      */
-    function _readBlobAsync(url, handler) {
+    ColorFinder.prototype._readBlobAsync = function (url, handler) {
         var xhr = new XMLHttpRequest();
 
         xhr.onreadystatechange = function () {
@@ -745,14 +751,14 @@ var MMCQ = (function() {
         xhr.open('GET', url);
         xhr.responseType = 'blob';
         xhr.send();
-    }
+    };
 
     /**
      * @param {HTMLImageElement} image
      * @returns {CanvasRenderingContext2D}
      * @private
      */
-    function _imageToContext(image) {
+    ColorFinder.prototype._imageToContext = function (image) {
         if (!(image instanceof HTMLImageElement)) throw colorFinderError('_initCanvas: Invalid image');
 
         var ctx = document.createElement('canvas').getContext('2d');
@@ -761,7 +767,9 @@ var MMCQ = (function() {
         ctx.drawImage(image, 0, 0);
 
         return ctx;
-    }
+    };
+
+    window.ColorFinder = new ColorFinder(); // Export single object
 
     function arrayMax(arr) {
         var len = arr.length, max = 0;
