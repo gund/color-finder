@@ -15,7 +15,7 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'lib/color-thief/src/color-thief.js',
+            'bower_components/color-thief/src/color-thief.js',
             'src/*.js',
             'test/*Spec.js'
         ],
