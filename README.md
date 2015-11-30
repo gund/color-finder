@@ -1,4 +1,4 @@
-# color-finder
+# color-finder [![Build Status](https://travis-ci.org/gund/color-finder.svg?branch=master)](https://travis-ci.org/gund/color-finder)
 
 This class can get you a common color from the image by url.
 But be careful of ussing this as there are Cross Origin policy which may block some images from different domains.
