@@ -5,6 +5,10 @@
 (function () {
     "use strict";
 
+    var colorFinderError = function (msg) {
+        return Error('ColorFinder: ' + msg);
+    };
+
     var colorFinderConfig = {
         maxColorValue: 230 // Maximum value for RGB complement
     };
@@ -17,7 +21,7 @@
      * @param {*} value
      */
     ColorFinder.setConfig = function (key, value) {
-        if (colorFinderConfig[key] === undefined) throw ColorFinderError('setConfig: Invalid config key');
+        if (colorFinderConfig[key] === undefined) throw colorFinderError('setConfig: Invalid config key');
         colorFinderConfig[key] = value;
     };
 
@@ -27,13 +31,13 @@
      * @param {Function} callback
      */
     ColorFinder.fromImage = function (imageUrl, callback) {
-        if (!imageUrl) throw ColorFinderError('fromImage: Invalid image url');
-        if (typeof callback !== 'function') throw ColorFinderError('fromImage: Invalid callback');
+        if (!imageUrl) throw colorFinderError('fromImage: Invalid image url');
+        if (typeof callback !== 'function') throw colorFinderError('fromImage: Invalid callback');
 
         getPopularColor(imageUrl, callback);
     };
 
-    window['ColorFinder'] = ColorFinder; // Export
+    window.ColorFinder = ColorFinder; // Export
 
     /**
      * @param {String} imgUrl
@@ -44,7 +48,7 @@
 
         //_readBlobAsync(imgUrl, function (data) {
         var img = new Image();//, blobUrl = (window.URL || window.webkitURL).createObjectURL(data);
-        var popularColor = [0, 0, 0];
+        //var popularColor = [0, 0, 0];
 
         img.onload = function () {
             //var imageData = _imageToContext(img).getImageData(0, 0, img.width, img.height);
@@ -72,8 +76,8 @@
      * @returns {Array}
      */
     function normalizeColor(color, maxColor) {
-        if (!(color instanceof Array) || color.length < 3) throw ColorFinderError('normalizeColor: Invalid color');
-        if (maxColor === undefined) throw ColorFinderError('normalizeColor: Invalid maxColor');
+        if (!(color instanceof Array) || color.length < 3) throw colorFinderError('normalizeColor: Invalid color');
+        if (maxColor === undefined) throw colorFinderError('normalizeColor: Invalid maxColor');
 
         var max = arrayMax(color);
         if (max <= maxColor) return color;
@@ -124,7 +128,7 @@
         var xhr = new XMLHttpRequest();
 
         xhr.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) handler(this.response);
+            if (this.readyState === 4 && this.status === 200) handler(this.response);
         };
 
         xhr.open('GET', url);
@@ -138,7 +142,7 @@
      * @private
      */
     function _imageToContext(image) {
-        if (!(image instanceof HTMLImageElement)) throw ColorFinderError('_initCanvas: Invalid image');
+        if (!(image instanceof HTMLImageElement)) throw colorFinderError('_initCanvas: Invalid image');
 
         var ctx = document.createElement('canvas').getContext('2d');
         ctx.canvas.width = image.width;
@@ -146,10 +150,6 @@
         ctx.drawImage(image, 0, 0);
 
         return ctx;
-    }
-
-    function ColorFinderError(msg) {
-        return Error('ColorFinder: ' + msg);
     }
 
     function arrayMax(arr) {
