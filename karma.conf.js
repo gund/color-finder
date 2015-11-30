@@ -15,6 +15,7 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
+            {pattern: 'example/demo-image.jpg', watched: false, included: false, served: true},
             'bower_components/color-thief/src/color-thief.js',
             'src/*.js',
             'test/*Spec.js'

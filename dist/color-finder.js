@@ -785,7 +785,13 @@ var MMCQ = (function() {
         return ctx;
     };
 
-    window.ColorFinder = new ColorFinder(); // Export single object
+    // Export ColorFinder
+    window.ColorFinder = new ColorFinder();
+
+    // Exports for tests
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = colorFinderError;
+    }
 
     function arrayMax(arr) {
         var len = arr.length, max = 0;
