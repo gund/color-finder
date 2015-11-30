@@ -18,13 +18,21 @@ or just download latest release from Github.
 
 `ColorFinder.fromImage('http://....jpg', function(color) {...})`
 
-**color** is an array which contains RGB values (like [234, 48, 255]).
+**color** is an array which contains RGB value (like [234, 48, 255]).
 
 You can also specify maximum value for RGB complement by calling:
 
 `ColorFinder.setConfig('maxColorValue', 230)`
 
 Here **230** will be limit for output color.
+
+## Development
+
+To build this package run `npm install` to get all dependencies.
+
+To build run `gulp`
+
+To run tests run `npm test`
 
 #### Author
 **Alex Malkevich**
