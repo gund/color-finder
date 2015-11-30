@@ -644,6 +644,16 @@ var MMCQ = (function() {
     };
 
     /**
+     * Update config of ColorFinder
+     * @param {String} key
+     * @return {*}
+     */
+    ColorFinder.prototype.getConfig = function (key) {
+        if (colorFinderConfig[key] === undefined) throw colorFinderError('setConfig: Invalid config key');
+        return colorFinderConfig[key];
+    };
+
+    /**
      * Get most common color from image by URL
      * @param {String} imageUrl
      * @param {Function} callback
