@@ -620,36 +620,42 @@ var MMCQ = (function() {
         return Error('ColorFinder: ' + msg);
     };
 
+    var colorFinderConfig = Object.seal({
+        maxColorValue: 230 // Maximum value for RGB complement
+    });
+
     /**
      * ColorFinder Class
      * @constructor
      */
     function ColorFinder() {
-        this.settings = Object.seal({
-            maxColorValue: 230 // Maximum value for RGB complement
-        });
     }
 
     /**
      * Update config of ColorFinder
      * @param {String} key
      * @param {*} value
+     * @return ColorFinder
      */
     ColorFinder.prototype.setConfig = function (key, value) {
-        if (this.settings[key] === undefined) throw colorFinderError('setConfig: Invalid config key');
-        this.settings[key] = value;
+        if (colorFinderConfig[key] === undefined) throw colorFinderError('setConfig: Invalid config key');
+        colorFinderConfig[key] = value;
+        return this;
     };
 
     /**
      * Get most common color from image by URL
      * @param {String} imageUrl
      * @param {Function} callback
+     * @return ColorFinder
      */
     ColorFinder.prototype.fromImage = function (imageUrl, callback) {
         if (!imageUrl) throw colorFinderError('fromImage: Invalid image url');
         if (typeof callback !== 'function') throw colorFinderError('fromImage: Invalid callback');
 
         this._getPopularColor(imageUrl, callback);
+
+        return this;
     };
 
     /**
@@ -678,7 +684,7 @@ var MMCQ = (function() {
             //popularColor = [dominantR, dominantG, dominantB];
             //handler(popularColor);
 
-            callback(me._normalizeColor(ColorThief.prototype.getColor(img), me.settings.maxColorValue));
+            callback(me._normalizeColor(ColorThief.prototype.getColor(img), colorFinderConfig.maxColorValue));
         };
 
         img.crossOrigin = ''; // Try to fix cross origin restriction
