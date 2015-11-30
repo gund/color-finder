@@ -12,4 +12,10 @@ describe('ColorFinder class', function () {
         expect(ColorFinder.setConfig('maxColorValue', 200).getConfig('maxColorValue')).toBe(200);
     });
 
+    it('should throw error if config key unknown', function () {
+        expect(function () {
+            ColorFinder.setConfig('customConfig', 'OK?');
+        }).toThrow(new Error('ColorFinder: setConfig: Invalid config key'));
+    });
+
 });
