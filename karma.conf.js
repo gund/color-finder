@@ -2,18 +2,14 @@
 // Generated on Fri Sep 18 2015 23:50:53 GMT+0400 (GST)
 
 module.exports = function (config) {
+
+    var withReports = process.argv.indexOf('--with-reports') !== -1;
+    var noUploadReports = process.argv.indexOf('--no-upload-reports') !== -1;
+
     var configuration = {
 
         // base path that will be used to resolve all patterns (eg. files, exclude)
         basePath: '',
-
-
-        plugins: [
-            'karma-jasmine',
-            'karma-chrome-launcher',
-            'karma-coverage',
-            'karma-coveralls'
-        ],
 
 
         // frameworks to use
@@ -44,16 +40,7 @@ module.exports = function (config) {
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress', 'coverage', 'coveralls'],
-
-
-        coverageReporter: {
-            reporters: [
-                {type: 'lcov', dir: 'coverage/', subdir: '.'},
-                {type: 'json', dir: 'coverage/', subdir: '.'},
-                {type: 'text-summary'}
-            ]
-        },
+        reporters: ['progress'],
 
 
         // web server port
@@ -92,6 +79,23 @@ module.exports = function (config) {
         browserNoActivityTimeout: 100000
     };
 
+    // Add coveralls
+    if (withReports) {
+        configuration.coverageReporter = {
+            reporters: [
+                {type: 'lcov', dir: 'coverage/', subdir: '.'},
+                {type: 'json', dir: 'coverage/', subdir: '.'},
+                {type: 'text-summary'}
+            ]
+        };
+        configuration.reporters.push('coverage');
+
+        if (!noUploadReports) {
+            configuration.reporters.push('coveralls');
+        }
+    }
+
+    /** @namespace process.env.TRAVIS */
     if (process.env.TRAVIS) {
         configuration.browsers = ['Chrome_travis_ci'];
     }
