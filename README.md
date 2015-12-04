@@ -35,5 +35,9 @@ To build this package run `gulp`
 
 To run tests run `npm test`
 
+### Credits
+
+- color-thief – https://github.com/lokesh/color-thief/
+
 #### Author
 **Alex Malkevich**
