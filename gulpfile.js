@@ -13,7 +13,7 @@ var gulp = require('gulp')
 var BUILD_NAME = 'color-finder.js';
 var BUILD_PATH = 'dist';
 var BUILD_SOURCE = [
-    'lib/color-thief/src/color-thief.js'
+    'bower_components/color-thief/src/color-thief.js'
     , 'src/*.js'
 ];
 

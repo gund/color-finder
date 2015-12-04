@@ -2,6 +2,10 @@
 // Generated on Fri Sep 18 2015 23:50:53 GMT+0400 (GST)
 
 module.exports = function (config) {
+
+    var withReports = process.argv.indexOf('--with-reports') !== -1;
+    var noUploadReports = process.argv.indexOf('--no-upload-reports') !== -1;
+
     var configuration = {
 
         // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -15,7 +19,8 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'lib/color-thief/src/color-thief.js',
+            {pattern: 'example/demo-image.jpg', watched: false, included: false, served: true},
+            'bower_components/color-thief/src/color-thief.js',
             'src/*.js',
             'test/*Spec.js'
         ],
@@ -28,7 +33,7 @@ module.exports = function (config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            'src/scripts/*.js': ['coverage']
+            'src/*.js': ['coverage']
         },
 
 
@@ -74,6 +79,23 @@ module.exports = function (config) {
         browserNoActivityTimeout: 100000
     };
 
+    // Add coveralls
+    if (withReports) {
+        configuration.coverageReporter = {
+            reporters: [
+                {type: 'lcov', dir: 'coverage/', subdir: '.'},
+                {type: 'json', dir: 'coverage/', subdir: '.'},
+                {type: 'text-summary'}
+            ]
+        };
+        configuration.reporters.push('coverage');
+
+        if (!noUploadReports) {
+            configuration.reporters.push('coveralls');
+        }
+    }
+
+    /** @namespace process.env.TRAVIS */
     if (process.env.TRAVIS) {
         configuration.browsers = ['Chrome_travis_ci'];
     }

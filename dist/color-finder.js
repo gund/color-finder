@@ -712,13 +712,13 @@ var MMCQ = (function() {
         if (!(color instanceof Array) || color.length < 3) throw colorFinderError('normalizeColor: Invalid color');
         if (maxColor === undefined) throw colorFinderError('normalizeColor: Invalid maxColor');
 
-        var max = arrayMax(color);
+        var max = this._arrayMax(color);
         if (max <= maxColor) return color;
 
         var colorDelta = max - maxColor;
-        color[0] -= colorDelta;
-        color[1] -= colorDelta;
-        color[2] -= colorDelta;
+        color[0] = Math.max(color[0] - colorDelta, 0);
+        color[1] = Math.max(color[1] - colorDelta, 0);
+        color[2] = Math.max(color[2] - colorDelta, 0);
         return color;
     };
 
@@ -785,12 +785,18 @@ var MMCQ = (function() {
         return ctx;
     };
 
-    window.ColorFinder = new ColorFinder(); // Export single object
-
-    function arrayMax(arr) {
+    /**
+     * @param {Array} arr
+     * @returns {number}
+     * @private
+     */
+    ColorFinder.prototype._arrayMax = function (arr) {
         var len = arr.length, max = 0;
-        while (--len) if (arr[len] > max) max = arr[len];
+        while (--len > -1) if (arr[len] > max) max = arr[len];
         return max;
-    }
+    };
+
+    // Export ColorFinder
+    window.ColorFinder = new ColorFinder();
 
 })();
