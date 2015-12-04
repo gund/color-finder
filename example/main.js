@@ -3,7 +3,7 @@
  */
 
 window.addEventListener('load', function () {
-    loadAndUse('https://static.biddi.com/users/733/storecover.jpg');
+    loadAndUse('demo-image.jpg');
 
     document.querySelector('.load').addEventListener('click', function () {
         var url = document.querySelector('.image-url').value;
