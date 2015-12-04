@@ -1,10 +1,13 @@
 language: node_js
 node_js:
-  - "0.10"
-  - "0.12"
+- '0.10'
+- '0.12'
 before_install:
-  - export CHROME_BIN=chromium-browser
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
+- export CHROME_BIN=chromium-browser
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
 install:
-  - npm install
+- npm install
+env:
+  repo_token:
+    secure: GsM4/Z+XqsSB/5xdnP/8Oab3roYL91R3IO0Vsnd7ee+RWi80x8gWCf6yjMy+n8RImO7yGTUcYaqwreSBtNJYVdTHmJXXYhlmOLr9AOww60gczEwqLgTGCcBH6lmbfa3QXnypBbBAqybKAQExfelHuBlD3leJQfXY902DyXDVId5CU7P4M8MnLlr956ujdPYFdEjW0t6Wo0oYqH0xQY/Ujrb2yMvc0V7dnPRqungHkhRP56zaGGyQ/m0x10b3ZRAOooE8MNSkdvjtvR/Joun78j6bL8hLmy4x3EQANrOdut3EcJX3wPgOHrRnovy7dxdQBbmAQWtKKnZCva92dEstzpq0lmtD14kfRjzZzX4vev11pUizhFNaCjTagQiDl1HTBN+mJQOQCFR3gOZNfTXE5nGofhp5pdetgY4A4qatdLukXUfApK2oevqrGi32Q9PDdlEbYykyZCf56nFxJsocIH/R2PKcaU9goVIT6BATjoFyHI6iiSusn8xcfLJMGovvI5VmwCXFLhCj8Cvdv1qYgDIcTYfL6V0eVer+B83hmGUcRRMGzJK+/qItPHC61QNT5Oiz1NDeoFgcD6rbCelQslJiOrokxOUFSyJZTri+jiDY5qTCSeVZYhknnqEvsVjnVz2QbkoFhdMu52VDSqD7rhOKdJ7DRvMVIX6RKrYLM2c=

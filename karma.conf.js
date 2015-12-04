@@ -8,6 +8,14 @@ module.exports = function (config) {
         basePath: '',
 
 
+        plugins: [
+            'karma-jasmine',
+            'karma-chrome-launcher',
+            'karma-coverage',
+            'karma-coveralls'
+        ],
+
+
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
         frameworks: ['jasmine'],
@@ -36,7 +44,16 @@ module.exports = function (config) {
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress'],
+        reporters: ['progress', 'coverage', 'coveralls'],
+
+
+        coverageReporter: {
+            reporters: [
+                {type: 'lcov', dir: 'coverage/', subdir: '.'},
+                {type: 'json', dir: 'coverage/', subdir: '.'},
+                {type: 'text-summary'}
+            ]
+        },
 
 
         // web server port
