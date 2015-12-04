@@ -716,9 +716,9 @@ var MMCQ = (function() {
         if (max <= maxColor) return color;
 
         var colorDelta = max - maxColor;
-        color[0] -= colorDelta;
-        color[1] -= colorDelta;
-        color[2] -= colorDelta;
+        color[0] = Math.max(color[0] - colorDelta, 0);
+        color[1] = Math.max(color[1] - colorDelta, 0);
+        color[2] = Math.max(color[2] - colorDelta, 0);
         return color;
     };
 
