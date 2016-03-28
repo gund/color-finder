@@ -37,7 +37,7 @@ To run tests run `npm test`
 
 ### Credits
 
-- color-thief – https://github.com/lokesh/color-thief/
+- Nick Rabinowitz – Thanks for the modified median cut quantization JS port (http://www.leptonica.com)
 
 #### Author
 **Alex Malkevich**
