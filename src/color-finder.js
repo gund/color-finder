@@ -2,22 +2,36 @@
  * Created by alex on 11/25/15.
  */
 
-(function () {
+/**
+ * @type {ColorFinder}
+ */
+var ColorFinder = (function () {
     "use strict";
+
+    var CAN_USE_WORKER = ('Worker' in window);
+    var WORKER_URL = 'color-finder-worker.js';
 
     var colorFinderError = function (msg) {
         return Error('ColorFinder: ' + msg);
     };
 
     var colorFinderConfig = Object.seal({
-        maxColorValue: 230 // Maximum value for RGB complement
+        quality: 10,
+        colorsAmount: 10,
+        maxColorValue: 230, // Maximum value for RGB complement
+        useWebWorker: CAN_USE_WORKER, // Prefer to process in web worker
+        workerPrefixPath: '' // If worker does not respond - correct path to it here and call updateWorker()
     });
 
     /**
      * ColorFinder Class
+     * @type ColorFinder
      * @constructor
      */
     function ColorFinder() {
+        // Init web worker if available
+        this._worker = null;
+        if (CAN_USE_WORKER) this._worker = new Worker(colorFinderConfig.workerPrefixPath + WORKER_URL);
     }
 
     /**
@@ -40,6 +54,17 @@
     ColorFinder.prototype.getConfig = function (key) {
         if (colorFinderConfig[key] === undefined) throw colorFinderError('setConfig: Invalid config key');
         return colorFinderConfig[key];
+    };
+
+    /**
+     * Update Web Worker instance
+     * <b>(Will terminate previous worker!)</b>
+     * @return {ColorFinder}
+     */
+    ColorFinder.prototype.updateWorker = function () {
+        if (this._worker instanceof Worker) this._worker.terminate();
+        if (CAN_USE_WORKER) this._worker = new Worker(colorFinderConfig.workerPrefixPath + WORKER_URL);
+        return this;
     };
 
     /**
@@ -66,29 +91,14 @@
         if (!imgUrl) return;
 
         var me = this;
-
-        //this._readBlobAsync(imgUrl, function (data) {
-        var img = new Image();//, blobUrl = (window.URL || window.webkitURL).createObjectURL(data);
-        //var popularColor = [0, 0, 0];
+        var img = new Image();
 
         img.onload = function () {
-            //var imageData = this._imageToContext(img).getImageData(0, 0, img.width, img.height);
-
-            //var histogram = this._buildHistogram(imageData.data, imageData.width * imageData.height);
-            //var dominantR = histogram.r.indexOf(arrayMax(histogram.r));
-            //var dominantG = histogram.g.indexOf(arrayMax(histogram.g));
-            //var dominantB = histogram.b.indexOf(arrayMax(histogram.b));
-
-            //console.log(dominantR, dominantG, dominantB);
-            //popularColor = [dominantR, dominantG, dominantB];
-            //handler(popularColor);
-
-            callback(me._normalizeColor(ColorThief.prototype.getColor(img), colorFinderConfig.maxColorValue));
+            me._getColorFromImage.call(me, img, callback);
         };
 
         img.crossOrigin = ''; // Try to fix cross origin restriction
-        img.src = imgUrl;//blobUrl;
-        //});
+        img.src = imgUrl;
     };
 
     /**
@@ -112,53 +122,58 @@
     };
 
     /**
-     * @param {CanvasPixelArray} pixels
-     * @param {Number} totalPixels
-     * @returns {{r: Array, g: Array, b: Array, a: Array}}
+     * Get color from image
+     * @param {HTMLImageElement} image
+     * @param {Function} callback
      * @private
      */
-    ColorFinder.prototype._buildHistogram = function (pixels, totalPixels) {
-        var histogram = {
-            r: [],
-            g: [],
-            b: [],
-            a: []
-        }, counter = pixels.length;
-        var pxR, pxG, pxB, pxA;
+    ColorFinder.prototype._getColorFromImage = function (image, callback) {
+        var imageCtx = this._imageToContext(image);
 
-        while (counter) {
-            pxA = pixels[--counter];
-            pxB = pixels[--counter];
-            pxG = pixels[--counter];
-            pxR = pixels[--counter];
+        // Get image pixels
+        var imageData = imageCtx.getImageData(0, 0, image.width, image.height);
 
-            histogram.r[pxR] = histogram.r[pxR] !== undefined ? histogram.r[pxR] + pxR / totalPixels : pxR / totalPixels;
-            histogram.g[pxG] = histogram.g[pxG] !== undefined ? histogram.g[pxG] + pxG / totalPixels : pxG / totalPixels;
-            histogram.b[pxB] = histogram.b[pxB] !== undefined ? histogram.b[pxB] + pxB / totalPixels : pxB / totalPixels;
-            histogram.a[pxA] = histogram.a[pxA] !== undefined ? histogram.a[pxA] + pxA / totalPixels : pxA / totalPixels;
+        if (colorFinderConfig.useWebWorker && CAN_USE_WORKER) {
+            // Listen to worker response
+            this._worker.onmessage = function (e) {
+                this._worker.onmessage = undefined; // Remove listener
+                var data = e.data;
+                var color;
+
+                // Fallback if worker failed
+                if (e.error) {
+                    color = this._processPixelsToColor(imageData, colorFinderConfig.colorsAmount, colorFinderConfig.quality)[0];
+                } else {
+                    color = data.response[0];
+                }
+
+                // Normalize color
+                color = this._normalizeColor(color, colorFinderConfig.maxColorValue);
+
+                // Return value to callback
+                callback(color);
+            }.bind(this);
+
+            // Send task to worker
+            this._worker.postMessage({
+                data: imageData,
+                colorsAmount: colorFinderConfig.colorsAmount,
+                quality: colorFinderConfig.quality
+            });
+        } else {
+            // Get common color
+            var color = this._processPixelsToColor(imageData, colorFinderConfig.colorsAmount, colorFinderConfig.quality)[0];
+
+            // Normalize color
+            color = this._normalizeColor(color, colorFinderConfig.maxColorValue);
+
+            // Return value to callback
+            callback(color);
         }
-
-        return histogram;
     };
 
     /**
-     * @param {String} url
-     * @param {Function} handler
-     * @private
-     */
-    ColorFinder.prototype._readBlobAsync = function (url, handler) {
-        var xhr = new XMLHttpRequest();
-
-        xhr.onreadystatechange = function () {
-            if (this.readyState === 4 && this.status === 200) handler(this.response);
-        };
-
-        xhr.open('GET', url);
-        xhr.responseType = 'blob';
-        xhr.send();
-    };
-
-    /**
+     * Create virtual rendering context and draw image into it
      * @param {HTMLImageElement} image
      * @returns {CanvasRenderingContext2D}
      * @private
@@ -185,7 +200,43 @@
         return max;
     };
 
+    /**
+     * Process pixels into array of most common colors
+     * @param {ImageData} imageData
+     * @param {Number} colorsAmount
+     * @param {Number} quality
+     * @return {Array}
+     * @private
+     */
+    ColorFinder.prototype._processPixelsToColor = function (imageData, colorsAmount, quality) {
+        colorsAmount = +colorsAmount;
+        quality = +quality;
+
+        var pixels = imageData.data;
+        var pixelCount = imageData.width * imageData.height;
+
+        // Store the RGB values in an array format suitable for quantize function
+        var pixelArray = [];
+        for (var i = 0, offset, r, g, b, a; i < pixelCount; i = i + quality) {
+            offset = i * 4;
+            r = pixels[offset + 0];
+            g = pixels[offset + 1];
+            b = pixels[offset + 2];
+            a = pixels[offset + 3];
+            // If pixel is mostly opaque and not white
+            if (a >= 125 && (r <= 250 || g <= 250 || b <= 250)) {
+                pixelArray.push([r, g, b]);
+            }
+        }
+
+        // Send array to quantize function which clusters values
+        // using median cut algorithm
+        var cmap = MMCQ.quantize(pixelArray, colorsAmount);
+
+        return cmap ? cmap.palette() : [];
+    };
+
     // Export ColorFinder
-    window.ColorFinder = new ColorFinder();
+    return new ColorFinder();
 
 })();

@@ -13,14 +13,18 @@ var gulp = require('gulp')
 var BUILD_NAME = 'color-finder.js';
 var BUILD_PATH = 'dist';
 var BUILD_SOURCE = [
-    'bower_components/color-thief/src/color-thief.js'
-    , 'src/*.js'
+    'src/*.js',
+    '!src/color-finder-worker.js'
+];
+var FILES_TO_COPY = [
+    'src/_mmcq.js',
+    'src/color-finder-worker.js'
 ];
 
 gulp.task('scripts', function () {
     return gulp.src(BUILD_SOURCE)
         .pipe(jshint('.jshintrc'))
-        .pipe(gulpif(['*', '!color-thief.js'], jshint.reporter('default')))
+        .pipe(gulpif(['*', '!_mmcq.js'], jshint.reporter('default')))
         .pipe(concat(BUILD_NAME))
         .pipe(gulp.dest(BUILD_PATH))
         .pipe(rename({suffix: '.min'}))
@@ -29,8 +33,14 @@ gulp.task('scripts', function () {
         .pipe(notify({message: 'Scripts task completed'}));
 });
 
+gulp.task('copy_files', function () {
+    return gulp.src(FILES_TO_COPY)
+        .pipe(gulp.dest(BUILD_PATH));
+});
 
-gulp.task('default', ['scripts']);
+gulp.task('build', ['scripts', 'copy_files']);
+
+gulp.task('default', ['build']);
 gulp.task('watch', function () {
-    gulp.watch(BUILD_SOURCE, ['scripts']);
+    return gulp.watch(BUILD_SOURCE, ['scripts']);
 });

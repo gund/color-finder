@@ -10,7 +10,5 @@
   ],
   "license": "MIT",
   "homepage": "",
-  "dependencies": {
-    "color-thief": "~2.0.1"
-  }
+  "dependencies": {}
 }

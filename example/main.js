@@ -12,6 +12,8 @@ window.addEventListener('load', function () {
     }, false);
 });
 
+ColorFinder.setConfig('workerPrefixPath', '../dist/').updateWorker();
+
 function loadAndUse(url) {
     document.querySelector('.img-cnt').innerHTML = '<img src="' + url + '">';
 
