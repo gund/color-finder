@@ -1,5 +1,6 @@
 {
   "name": "color-finder",
+  "version": "1.3.2",
   "main": "src/color-finder.js",
   "authors": [
     "Alex Malkevich <malkevich.alex@gmail.com>"
